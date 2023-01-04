@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import ToDoList from './components/ToDoList';
 import Header from './components/Header'
 import {
@@ -10,57 +10,84 @@ import {
   Platform,
   TextInput,
   TouchableOpacity,
-  Keyboard
+  Keyboard,
+  Alert,
+  FlatList
 } from 'react-native';
 
 const App = () => {
- const current = new Date();
- const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+  const current = new Date();
+  const date = `${current.getDate()}/${current.getMonth() + 1}/${current.getFullYear()}`;
   const [task, setTask] = useState('');
+  const [click, setClick] = useState(false)
   const [taskItems, setTaskItems] = useState([]);
 
-  const handlePress = () =>{
-    Keyboard.dismiss();
-    setTaskItems([...taskItems,task])
-    setTask(null);
-    console.log(task,taskItems,Platform.OS);
+  const handlePress = () => {
+    if (task === "") {
+      Alert.alert("OOPS",
+        "Nothing added in todo",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      )
+    }
+    else {
+      Keyboard.dismiss();
+      Alert.alert("created",
+        "todo created and added",
+        [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      )
+      setClick(true)
+      setTaskItems([...taskItems, task])
+      setTask("");
+    }
+    console.log(task, taskItems, Platform.OS);
   }
 
-  const deleteTask=(index)=>{
-    
+  const deleteTask = (index) => {
+
     let itemCopy = [...taskItems]
-    itemCopy.splice(index,1)
+    itemCopy.splice(index, 1)
+    if (itemCopy.length === 0) {
+      setClick(false)
+    }
     setTaskItems(itemCopy)
   }
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
+      <Header />
+      <View
+        style={styles.contentContainerStyle}
         keyboardShouldPersistTaps="handled">
-          <Header />
-        <View style={styles.textwrapper}>
-          <Text style={styles.textsection}>{date}</Text>
-        </View>
-        <View style={styles.item}>
-          {/* write input displayed */}
-         {
-          taskItems.map((item,index) =>
-            {return (<TouchableOpacity key={index} onPress={()=>deleteTask(index)}><ToDoList text={item} /></TouchableOpacity>)})
-         }          
-         
-          
-          
-        </View>
-      </ScrollView>
+        {click && <View>
+          <View style={styles.textwrapper}>
+            <Text style={styles.textsection}>{date}</Text>
+          </View>
+          <View style={styles.item}>
+            {/* write input displayed */}
+            <FlatList
+              data={taskItems}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() => deleteTask(index)}>
+                  <ToDoList text={item} />
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index}
+              extraData={taskItems}
+            />
+
+          </View>
+
+        </View>}
+
+
+      </View>
       {/* writing */}
       <View>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.writetextwrapper}>
-          <TextInput style={styles.input} placeholder="Write task!" value={task} onChangeText={t => setTask(t)}/>
-          <TouchableOpacity onPress={()=>handlePress()}>
+          <TextInput style={styles.input} placeholder="Write task!" value={task} onChangeText={t => setTask(t)} />
+          <TouchableOpacity onPress={() => handlePress()}>
             <View style={styles.addwrapper}>
               <Text style={styles.addtext}>+</Text>
             </View>
@@ -72,30 +99,39 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: 'whitesmoke'},
-  textwrapper: {paddingTop: 80, paddingLeft: 20},
-  textsection: {fontSize: 22, fontWeight: 'stronger'},
-  item: {margin: 30},
+  container: { flex: 1, backgroundColor: 'whitesmoke' },
+  contentContainerStyle: {
+    padding: 18,
+    flex: 1,
+  },
+  textwrapper: { paddingLeft: 20, },
+  textsection: { fontSize: 21, fontWeight: "bold" },
+  item: {
+    paddingTop: 5
+    , margin: 10,
+    height: 600
+  },
   writetextwrapper: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 20,
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   input: {
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: '#FFF',
     borderRadius: 60,
     borderColor: 'gray',
     borderWidth: 1,
-    width: 250,
+    width: 280,
+    height: 50
   },
   addwrapper: {
-    width: 60,
-    height: 60,
+    width: 40,
+    height: 40,
     backgroundColor: '#FFF',
     borderRadius: 60,
     justifyContent: 'center',
@@ -103,7 +139,10 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
   },
-  addtext: {},
+  addtext: {
+    fontWeight: "bold",
+    fontSize: 25
+  },
 });
 
 export default App;

@@ -12,8 +12,8 @@ const Header = () => {
 }
 
 const styles = StyleSheet.create({
-    header: {fontSize: 28,color: 'white',fontWeight: 'bold', marginTop: 10},
-    box:{width: '100%',height: 50, backgroundColor: '#A9A9A9', alignItems: 'center'}
+    header: {fontSize: 26,color: 'gray',fontWeight: '800', marginTop: 10},
+    box:{width: '100%',height: 50, alignItems: 'center'}
   
 })
 

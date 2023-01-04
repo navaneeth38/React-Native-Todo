@@ -8,19 +8,20 @@ const ToDoList = props => {
         setValv(true)
     }
   return (
-    <View style={styles.item}>
+    <View style={styles.items}>
       <View style={styles.itemleft}>
         <TouchableOpacity style={styles.square} onPress={deleteTask}></TouchableOpacity>
         <Text style={valv && {textDecorationLine: 'line-through'}}>{item}</Text>
       </View>
-      <View style={{maxWidth: '80%'}}></View>
+  
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  item: {
+  items: {
     backgroundColor: 'white',
+  
     padding: 15,
     borderRadius: 10,
     flexDirection: 'row',
